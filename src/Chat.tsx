@@ -35,18 +35,23 @@ export function Chat() {
     });
   };
 
-  const handleSaveChat = useCallback(() => {
+  const handleSaveChat = useCallback(async () => {
     console.log("handleSaveChat called");
     const chatElement = chatWindowRef.current;
     if (!chatElement) return;
-    chatElement.classList.add("preparing-for-save");
 
-    html2canvas(chatElement, {
-      scale: 2,
-      useCORS: true,
-      onclone: () => {},
-    }).then((canvas) => {
-      chatElement.classList.remove("preparing-for-save");
+    const originalHeight = chatElement.style.height;
+    const originalOverflow = chatElement.style.overflow;
+
+    try {
+      chatElement.style.height = "auto";
+      chatElement.style.overflow = "visible";
+      chatElement.classList.add("preparing-for-save");
+
+      const canvas = await html2canvas(chatElement, {
+        scale: 2,
+        useCORS: true,
+      });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
@@ -68,7 +73,7 @@ export function Chat() {
       heightLeft -= pdfHeight;
 
       while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
+        position = -pdfHeight * (pdf.internal.pages.length - 1);
         pdf.addPage();
         pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
@@ -76,7 +81,13 @@ export function Chat() {
 
       const date = new Date().toISOString().slice(0, 10);
       pdf.save(`chat-log-${date}.pdf`);
-    });
+    } catch (error) {
+      console.error("Failed to save chat as PDF:", error);
+    } finally {
+      chatElement.style.height = originalHeight;
+      chatElement.style.overflow = originalOverflow;
+      chatElement.classList.remove("preparing-for-save");
+    }
   }, []);
 
   useEffect(() => {
