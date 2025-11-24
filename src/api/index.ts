@@ -7,6 +7,23 @@ if (!baseUrl) {
   throw new Error("VITE_API_BASE_URL is not defined in your .env file.");
 }
 
+/**
+ * Calls the /initiate endpoint to get the AI's opening message.
+ * @returns A promise containing the initial reply and conversation history.
+ */
+const initiateChat = async () => {
+  try {
+    const response = await axios.get<{ reply: string; history: Message[] }>(
+      `${baseUrl}/mcp/initiate`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error initiating chat:", error);
+    // Re-throw the error so the component can handle UI updates (e.g., show an error message)
+    throw error;
+  }
+};
+
 const handleSend = async (
   input: string,
   messages: Message[],
@@ -36,4 +53,4 @@ const handleSend = async (
   }
 };
 
-export { handleSend };
+export { initiateChat, handleSend };

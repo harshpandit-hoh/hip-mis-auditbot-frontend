@@ -7,9 +7,11 @@ import {
   type FormEvent,
 } from "react";
 import type { Message } from "./interface";
-import { handleSend } from "./api";
+import { handleSend, initiateChat } from "./api";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+
+const GREETING_PLACEHOLDER = "Hello, please provide a greeting.";
 
 export function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -17,6 +19,32 @@ export function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchGreeting = async () => {
+      setIsLoading(true);
+      try {
+        const response = await initiateChat();
+        setMessages(response.history);
+      } catch (error) {
+        console.log("Error initiating chat:", error);
+        const errorMessage: Message = {
+          role: "model",
+          parts: [
+            {
+              text: "Sorry, I couldn't start the conversation. Please try refreshing the page.",
+            },
+          ],
+        };
+        setMessages([errorMessage]);
+      } finally {
+        setIsLoading(false); // Stop loading indicator
+      }
+    };
+
+    fetchGreeting();
+  }, []); // The empty dependency array [] ensures this runs only ONCE on mount.
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -112,13 +140,19 @@ export function Chat() {
           const messageText = msg.parts[0]?.text;
           if (!messageText) return null;
 
-          return (
-            <div key={index} className={`chat-bubble ${msg.role}`}>
-              <div
-                dangerouslySetInnerHTML={{ __html: marked.parse(messageText) }}
-              />
-            </div>
-          );
+          if (msg.role === "user" && messageText === GREETING_PLACEHOLDER) {
+            return null;
+          } else {
+            return (
+              <div key={index} className={`chat-bubble ${msg.role}`}>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: marked.parse(messageText),
+                  }}
+                />
+              </div>
+            );
+          }
         })}
         {isLoading && (
           <div className="chat-bubble model">
