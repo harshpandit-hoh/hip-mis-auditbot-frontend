@@ -68,19 +68,34 @@ export function Chat() {
     const chatElement = chatWindowRef.current;
     if (!chatElement) return;
 
-    const originalHeight = chatElement.style.height;
-    const originalOverflow = chatElement.style.overflow;
+    // --- THE FIX STARTS HERE ---
+    // This is the "magic trick" to make highlights PDF-friendly.
+    const highlights = chatElement.querySelectorAll("highlight");
 
     try {
+      // 1. Temporarily apply simple, PDF-friendly inline styles
+      //    This overrides your complex CSS just for the screenshot.
+      highlights.forEach((el) => {
+        const element = el as HTMLElement;
+        element.style.backgroundColor = "#FFFF99"; // A simple, safe yellow
+        element.style.color = "#000000"; // Force black text for readability
+        element.style.padding = "1px 3px"; // Remove complex padding/borders
+        element.style.borderRadius = "0";
+        element.style.border = "none";
+      });
+
+      // Your existing logic for expanding the div is perfect
       chatElement.style.height = "auto";
       chatElement.style.overflow = "visible";
       chatElement.classList.add("preparing-for-save");
 
+      // 2. Capture the canvas with the simplified styles
       const canvas = await html2canvas(chatElement, {
         scale: 2,
         useCORS: true,
       });
 
+      // Your existing PDF creation logic is perfect
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -112,8 +127,20 @@ export function Chat() {
     } catch (error) {
       console.error("Failed to save chat as PDF:", error);
     } finally {
-      chatElement.style.height = originalHeight;
-      chatElement.style.overflow = originalOverflow;
+      // 3. CRITICAL: Always restore the original styles after the capture
+      //    We remove the inline styles so the UI goes back to using your nice CSS.
+      highlights.forEach((el) => {
+        const element = el as HTMLElement;
+        element.style.backgroundColor = "";
+        element.style.color = "";
+        element.style.padding = "";
+        element.style.borderRadius = "";
+        element.style.border = "";
+      });
+
+      // Your existing cleanup logic is also perfect
+      chatElement.style.height = ""; // Use "" to revert to stylesheet
+      chatElement.style.overflow = "";
       chatElement.classList.remove("preparing-for-save");
     }
   }, []);
