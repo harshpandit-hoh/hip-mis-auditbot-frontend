@@ -25,7 +25,7 @@ function Login(props: {
 
     try {
       const response = await fetch(
-        "http://localhost:3004/api/auth/trigger-mail",
+        "https://chatbot.myhoh.in/mis-chatbot-api/auth/trigger-mail",
         {
           method: "POST",
           headers: {
@@ -71,7 +71,7 @@ function Login(props: {
 
     try {
       const response = await fetch(
-        "http://localhost:3004/api/auth/verify-otp",
+        "https://chatbot.myhoh.in/mis-chatbot-api/auth/verify-otp",
         {
           method: "POST",
           headers: {
@@ -115,7 +115,7 @@ function Login(props: {
 
     try {
       const response = await fetch(
-        "http://localhost:3004/api/auth/verify-token",
+        "https://chatbot.myhoh.in/mis-chatbot-api/auth/verify-token",
         {
           method: "POST",
           headers: {
