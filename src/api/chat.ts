@@ -30,11 +30,13 @@ const handleSend = async (
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
 ) => {
   try {
+    const email = localStorage.getItem("email") ?? "";
     const response = await axios.post<{ reply: string; history: Message[] }>(
       `${baseUrl}/mcp/chat`,
       {
         message: input,
         conversationHistory: messages,
+        email,
       }
     );
 

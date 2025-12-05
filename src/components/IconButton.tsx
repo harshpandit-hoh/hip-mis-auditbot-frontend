@@ -6,10 +6,12 @@ function IconButton(props: {
   icon: React.ReactNode;
   onClick: () => void;
   loading: boolean;
+  className?: string;
 }) {
   return (
     <Tooltip tooltipText="Log Out">
       <button
+        className={props.className ?? "icon-button"}
         onClick={props.onClick}
         disabled={props.loading}
         style={{

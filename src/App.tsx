@@ -5,7 +5,7 @@ import { checkSession, handleLogout } from "./api";
 import { Spinner } from "./components/ui/spinner";
 import { IconButton } from "./components";
 import { LogOut } from "lucide-react";
-
+import "./index.css";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -45,18 +45,12 @@ function App() {
     if (isAuthenticated) {
       return (
         <div className="App">
-          <div
-            style={{
-              display: "flex",
-              gap: "1rem",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
+          <div className="header_wrapper">
             <h1 style={{ margin: "auto", marginBottom: "2rem" }}>
               Hiranandani Industrial Park MIS Bot
             </h1>
             <IconButton
+              className="header-button"
               icon={<LogOut style={{ fontSize: ".5rem" }} />}
               loading={isLoading}
               onClick={() => {

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
+/* @plugin "tailwindcss-animate"; */
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -340,6 +340,13 @@ highlight {
   background-color: #1565c0;
 }
 
+.header_wrapper {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  width: 100%;
+}
+
 /* You can also define how it looks in dark mode if you have one */
 @media (prefers-color-scheme: dark) {
   highlight {
@@ -372,6 +379,13 @@ highlight {
     display: none;
   }
 
+  .header_wrapper {
+    display: none;
+  }
+  .header-button {
+    display: none;
+  }
+
   .chat-container {
     height: 100%; /* Make the chat container fill the #root element */
     border: none; /* Remove the border for a more seamless look */
@@ -379,7 +393,7 @@ highlight {
   }
 
   .chat-window {
-    height: 88vh;
+    height: 90vh;
     overflow-y: auto;
   }
 
