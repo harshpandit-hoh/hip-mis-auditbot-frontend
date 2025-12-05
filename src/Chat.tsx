@@ -13,7 +13,7 @@ import jsPDF from "jspdf";
 
 const GREETING_PLACEHOLDER = "Hello, please provide a greeting.";
 
-export function Chat() {
+export function Chat(props: { isAuthenticated: boolean }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,9 +41,10 @@ export function Chat() {
         setIsLoading(false); // Stop loading indicator
       }
     };
-
-    fetchGreeting();
-  }, []); // The empty dependency array [] ensures this runs only ONCE on mount.
+    if (props.isAuthenticated) {
+      fetchGreeting();
+    }
+  }, [props.isAuthenticated]); // The empty dependency array [] ensures this runs only ONCE on mount.
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
